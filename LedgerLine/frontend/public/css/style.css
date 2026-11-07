@@ -1,0 +1,139 @@
+:root {
+  --ll-primary: #0f2b48;
+  --ll-primary-hover: #0b1f34;
+  --ll-accent: #008080;
+  --ll-accent-light: #e6f6f6;
+  --ll-success: #198754;
+  --ll-danger: #dc3545;
+  --ll-warning: #f59e0b;
+  --ll-bg-light: #f8fafc;
+  --ll-card-bg: #ffffff;
+  --ll-text-dark: #1e293b;
+  --ll-text-muted: #64748b;
+  --ll-border: #e2e8f0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--ll-bg-light);
+  color: var(--ll-text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--ll-primary) !important;
+}
+
+.navbar-brand i {
+  color: var(--ll-accent);
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #475569;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--ll-accent) !important;
+}
+
+/* Custom Buttons */
+.btn-primary-ll {
+  background-color: var(--ll-primary);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-ll:hover {
+  background-color: var(--ll-primary-hover);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 43, 72, 0.15);
+}
+
+.btn-accent-ll {
+  background-color: var(--ll-accent);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-accent-ll:hover {
+  background-color: #006666;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 128, 128, 0.2);
+}
+
+/* Cards */
+.card-ll {
+  background: var(--ll-card-bg);
+  border: 1px solid var(--ll-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-ll:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Badges */
+.badge-role-admin {
+  background-color: #7c3aed;
+  color: #fff;
+}
+
+.badge-role-holder {
+  background-color: #0284c7;
+  color: #fff;
+}
+
+.badge-role-auditor {
+  background-color: #d97706;
+  color: #fff;
+}
+
+.badge-status-active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badge-status-frozen {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-status-closed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Financial Numbers */
+.currency-inr {
+  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+  font-weight: 700;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--ll-border);
+  background-color: #fff;
+}
+

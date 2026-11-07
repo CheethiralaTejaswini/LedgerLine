@@ -1,0 +1,183 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Financial Overview</h3>
+        <p class="text-muted small mb-0">Welcome back, <%= user.fullName %>. Here is your current portfolio status.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/accounts/new" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-plus-lg me-1"></i> Open Account
+        </a>
+        <a href="/transactions/transfer" class="btn btn-accent-ll btn-sm">
+          <i class="bi bi-arrow-left-right me-1"></i> Quick Transfer
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">TOTAL ACTIVE BALANCE</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0 currency-inr"><%= summary.formattedTotalBalance %></h3>
+          </div>
+          <div class="stat-icon stat-icon-success">
+            <i class="bi bi-wallet2"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">MANAGED ACCOUNTS</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0"><%= summary.totalAccounts %></h3>
+          </div>
+          <div class="stat-icon stat-icon-primary">
+            <i class="bi bi-bank"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">CONCURRENCY & SAFETY</span>
+            <h4 class="fw-bold text-success mt-1 mb-0"><i class="bi bi-shield-check"></i> ACID Enforced</h4>
+          </div>
+          <div class="stat-icon stat-icon-warning">
+            <i class="bi bi-fingerprint"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Accounts Section -->
+    <div class="card card-ll border-0 shadow-sm mb-4">
+      <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Your Accounts</h5>
+        <a href="/accounts/new" class="text-decoration-none small fw-semibold">+ New Account</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Account Number</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Current Balance</th>
+                <th>Opened On</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (accounts && accounts.length > 0) { %>
+                <% accounts.forEach(acc => { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold font-monospace"><%= acc.accountNumber %></span>
+                        <button class="btn btn-sm btn-outline-secondary btn-copy-account py-0 px-1" data-account="<%= acc.accountNumber %>" title="Copy Number">
+                          <i class="bi bi-clipboard"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td><span class="badge bg-light text-dark border"><%= acc.accountType %></span></td>
+                    <td>
+                      <span class="badge <%= acc.status === 'ACTIVE' ? 'badge-status-active' : acc.status === 'FROZEN' ? 'badge-status-frozen' : 'badge-status-closed' %>">
+                        <%= acc.status %>
+                      </span>
+                    </td>
+                    <td class="currency-inr fw-bold fs-6"><%= acc.formattedBalance %></td>
+                    <td class="text-muted small"><%= new Date(acc.createdAt).toLocaleDateString() %></td>
+                    <td class="text-end">
+                      <div class="btn-group btn-group-sm">
+                        <a href="/accounts/<%= acc._id %>" class="btn btn-outline-secondary" title="View Details">
+                          <i class="bi bi-eye"></i> Details
+                        </a>
+                        <a href="/transactions/transfer?from=<%= acc._id %>" class="btn btn-outline-primary" title="Transfer Money">
+                          <i class="bi bi-arrow-left-right"></i>
+                        </a>
+                        <a href="/accounts/<%= acc._id %>/statement" class="btn btn-outline-dark" title="View Statement">
+                          <i class="bi bi-receipt"></i> Statement
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">
+                    No active accounts found. <a href="/accounts/new">Open your first account</a>.
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Recent Activity</h5>
+        <a href="/transactions" class="text-decoration-none small fw-semibold">View All History &rarr;</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentTransactions && recentTransactions.length > 0) { %>
+                <% recentTransactions.forEach(t => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= t.transactionReference %></span></td>
+                    <td>
+                      <% if (t.type === 'DEPOSIT') { %>
+                        <span class="badge bg-success-subtle text-success"><i class="bi bi-arrow-down-left"></i> DEPOSIT</span>
+                      <% } else if (t.type === 'WITHDRAWAL') { %>
+                        <span class="badge bg-danger-subtle text-danger"><i class="bi bi-arrow-up-right"></i> WITHDRAWAL</span>
+                      <% } else { %>
+                        <span class="badge bg-primary-subtle text-primary"><i class="bi bi-arrow-left-right"></i> TRANSFER</span>
+                      <% } %>
+                    </td>
+                    <td class="currency-inr fw-bold <%= t.type === 'DEPOSIT' ? 'text-success' : 'text-danger' %>">
+                      <%= t.type === 'DEPOSIT' ? '+' : '-' %> <%= t.formattedAmount %>
+                    </td>
+                    <td>
+                      <span class="badge <%= t.status === 'SUCCESS' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= t.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small text-truncate" style="max-width: 200px;"><%= t.description || 'N/A' %></td>
+                    <td class="text-muted small"><%= new Date(t.createdAt).toLocaleString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No recent transactions recorded.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

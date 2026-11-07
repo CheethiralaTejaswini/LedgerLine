@@ -1,0 +1,10 @@
+{
+  "name": "ledgerline-root",
+  "version": "1.0.0",
+  "description": "LedgerLine Root Workspace",
+  "scripts": {
+    "start": "cd LedgerLine && node backend/server.js",
+    "test": "cd LedgerLine && node --test --test-concurrency=1 backend/tests/*.test.js",
+    "seed": "cd LedgerLine && node backend/config/seed.js"
+  }
+}

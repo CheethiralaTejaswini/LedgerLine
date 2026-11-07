@@ -1,0 +1,139 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <a href="/dashboard" class="text-decoration-none small text-muted">&larr; Back to Dashboard</a>
+        <h3 class="fw-bold mb-0 mt-1">Account Portfolio Details</h3>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/transactions/deposit?account=<%= account._id %>" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-plus-circle me-1"></i> Deposit
+        </a>
+        <a href="/transactions/withdraw?account=<%= account._id %>" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-dash-circle me-1"></i> Withdraw
+        </a>
+        <a href="/transactions/transfer?from=<%= account._id %>" class="btn btn-accent-ll btn-sm">
+          <i class="bi bi-arrow-left-right me-1"></i> Transfer
+        </a>
+        <a href="/accounts/<%= account._id %>/statement" class="btn btn-dark btn-sm">
+          <i class="bi bi-file-earmark-text me-1"></i> Statement
+        </a>
+      </div>
+    </div>
+
+    <!-- Account Details Card -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-7">
+        <div class="card card-ll border-0 shadow-sm p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <span class="badge bg-light text-dark border px-2 py-1 mb-2"><%= account.accountType %> ACCOUNT</span>
+              <h2 class="fw-bold text-dark font-monospace mb-1"><%= account.accountNumber %></h2>
+              <span class="text-muted small">Account Holder: <%= account.userId.fullName %> (<%= account.userId.email %>)</span>
+            </div>
+            <span class="badge <%= account.status === 'ACTIVE' ? 'badge-status-active' : 'badge-status-closed' %> fs-6 px-3 py-2">
+              <%= account.status %>
+            </span>
+          </div>
+
+          <hr>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <span class="text-muted small d-block">CURRENCY</span>
+              <span class="fw-bold"><%= account.currency %> (Indian Rupee)</span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted small d-block">CREATION TIMESTAMP</span>
+              <span class="fw-bold"><%= new Date(account.createdAt).toLocaleString() %></span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted small d-block">RAW PAISE BALANCE</span>
+              <span class="font-monospace"><%= account.balance %> paise</span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted small d-block">INTEGRITY MODEL</span>
+              <span class="badge bg-success-subtle text-success">Append-Only Immutable</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="card card-ll border-0 shadow-sm p-4 bg-primary text-white h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, #0f2b48 0%, #1e4b7a 100%);">
+          <div>
+            <span class="text-white-50 text-uppercase small fw-semibold">Available Liquid Balance</span>
+            <h1 class="display-5 fw-bold my-3 currency-inr text-white"><%= account.formattedBalance %></h1>
+            <p class="text-white-50 small mb-0">Protected against overdrafts and race conditions by atomic session locks.</p>
+          </div>
+          <div class="pt-3 border-top border-white border-opacity-25 d-flex justify-content-between align-items-center">
+            <span class="small font-monospace text-white-50">LE-VERIFIED</span>
+            <a href="/accounts/<%= account._id %>/statement" class="btn btn-sm btn-light text-primary fw-semibold">
+              <i class="bi bi-receipt me-1"></i> Full Ledger Statement
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions on this Account -->
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-header bg-white border-0 py-3">
+        <h5 class="fw-bold mb-0">Recent Activity for Account <%= account.accountNumber %></h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (transactions && transactions.length > 0) { %>
+                <% transactions.forEach(t => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= t.transactionReference %></span></td>
+                    <td>
+                      <% if (t.type === 'DEPOSIT') { %>
+                        <span class="badge bg-success-subtle text-success">DEPOSIT</span>
+                      <% } else if (t.type === 'WITHDRAWAL') { %>
+                        <span class="badge bg-danger-subtle text-danger">WITHDRAWAL</span>
+                      <% } else { %>
+                        <span class="badge bg-primary-subtle text-primary">TRANSFER</span>
+                      <% } %>
+                    </td>
+                    <td class="currency-inr fw-bold <%= t.type === 'DEPOSIT' || (t.destinationAccount && t.destinationAccount._id.toString() === account._id.toString()) ? 'text-success' : 'text-danger' %>">
+                      <%= t.formattedAmount %>
+                    </td>
+                    <td>
+                      <span class="badge <%= t.status === 'SUCCESS' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= t.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small"><%= t.description || 'N/A' %></td>
+                    <td class="text-muted small"><%= new Date(t.createdAt).toLocaleString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No transactions on this account yet.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

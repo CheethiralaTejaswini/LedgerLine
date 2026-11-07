@@ -1,0 +1,124 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <a href="/accounts/<%= account._id %>" class="text-decoration-none small text-muted">&larr; Back to Account Details</a>
+        <h3 class="fw-bold mb-0 mt-1">Official Account Statement</h3>
+        <p class="text-muted small mb-0">Traceable append-only ledger entries for A/C <%= account.accountNumber %></p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/accounts/<%= account._id %>/statement/export" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-filetype-csv me-1"></i> Export CSV
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-printer me-1"></i> Print Statement
+        </button>
+      </div>
+    </div>
+
+    <!-- Account Summary Header -->
+    <div class="card card-ll border-0 shadow-sm p-4 mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-3">
+          <span class="text-muted small d-block">ACCOUNT NUMBER</span>
+          <span class="fs-5 fw-bold font-monospace"><%= account.accountNumber %></span>
+        </div>
+        <div class="col-md-3">
+          <span class="text-muted small d-block">ACCOUNT HOLDER</span>
+          <span class="fw-bold"><%= account.userId.fullName %></span>
+        </div>
+        <div class="col-md-3">
+          <span class="text-muted small d-block">ACCOUNT TYPE</span>
+          <span class="badge bg-light text-dark border"><%= account.accountType %></span>
+        </div>
+        <div class="col-md-3 text-md-end">
+          <span class="text-muted small d-block">CURRENT BALANCE</span>
+          <span class="fs-4 fw-bold currency-inr text-success"><%= account.formattedBalance %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ledger Trail Table -->
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-header bg-white border-0 py-3">
+        <h5 class="fw-bold mb-0">Ledger Movement Log</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Entry Ref</th>
+                <th>Timestamp</th>
+                <th>Movement Type</th>
+                <th class="text-end">Debit (INR)</th>
+                <th class="text-end">Credit (INR)</th>
+                <th class="text-end">Balance After (INR)</th>
+                <th>Status</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (entries && entries.length > 0) { %>
+                <% entries.forEach(e => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= e.entryReference %></span></td>
+                    <td class="text-muted small"><%= new Date(e.timestamp).toLocaleString() %></td>
+                    <td>
+                      <span class="badge bg-light text-dark border small"><%= e.transactionType %></span>
+                    </td>
+                    <td class="text-end debit-entry">
+                      <%= e.debitAmount > 0 ? formatINR(e.debitAmount) : '—' %>
+                    </td>
+                    <td class="text-end credit-entry">
+                      <%= e.creditAmount > 0 ? formatINR(e.creditAmount) : '—' %>
+                    </td>
+                    <td class="text-end fw-bold font-monospace">
+                      <%= formatINR(e.balanceAfter) %>
+                    </td>
+                    <td>
+                      <span class="badge <%= e.status === 'POSTED' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= e.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small text-truncate" style="max-width: 220px;"><%= e.description %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No ledger movements recorded for this account.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing <%= entries.length %> of <%= total %> entries (Page <%= page %> of <%= pages %>)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="/accounts/<%= account._id %>/statement?page=<%= page - 1 %>">&laquo;</a>
+              </li>
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/accounts/<%= account._id %>/statement?page=<%= p %>"><%= p %></a>
+                </li>
+              <% } %>
+              <li class="page-item <%= page >= pages ? 'disabled' : '' %>">
+                <a class="page-link" href="/accounts/<%= account._id %>/statement?page=<%= page + 1 %>">&raquo;</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+

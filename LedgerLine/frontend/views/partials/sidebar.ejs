@@ -1,0 +1,88 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">
+        <%= currUser ? currUser.fullName.charAt(0).toUpperCase() : 'U' %>
+      </div>
+      <div class="overflow-hidden">
+        <div class="fw-bold text-white text-truncate"><%= currUser ? currUser.fullName : 'Guest' %></div>
+        <div class="small text-muted"><%= currUser ? currUser.role : '' %></div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/dashboard' || currentPath === '/admin/dashboard' || currentPath === '/auditor/dashboard' ? 'active' : '' %>" href="/dashboard">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <% if (currUser && currUser.role === 'ACCOUNT_HOLDER') { %>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/accounts/new' ? 'active' : '' %>" href="/accounts/new">
+          <i class="bi bi-plus-circle"></i>
+          <span>Open Account</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/transactions/deposit' ? 'active' : '' %>" href="/transactions/deposit">
+          <i class="bi bi-box-arrow-in-down-right"></i>
+          <span>Deposit Funds</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/transactions/withdraw' ? 'active' : '' %>" href="/transactions/withdraw">
+          <i class="bi bi-box-arrow-up-left"></i>
+          <span>Withdraw Funds</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/transactions/transfer' ? 'active' : '' %>" href="/transactions/transfer">
+          <i class="bi bi-arrow-left-right"></i>
+          <span>Internal Transfer</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/transactions' ? 'active' : '' %>" href="/transactions">
+          <i class="bi bi-clock-history"></i>
+          <span>Transaction History</span>
+        </a>
+      </li>
+    <% } else if (currUser && currUser.role === 'ADMIN') { %>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/admin/users' ? 'active' : '' %>" href="/admin/users">
+          <i class="bi bi-people-fill"></i>
+          <span>Manage Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/admin/accounts' ? 'active' : '' %>" href="/admin/accounts">
+          <i class="bi bi-wallet-fill"></i>
+          <span>Manage Accounts</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/admin/transactions' ? 'active' : '' %>" href="/admin/transactions">
+          <i class="bi bi-receipt-cutoff"></i>
+          <span>All Transactions</span>
+        </a>
+      </li>
+    <% } else if (currUser && currUser.role === 'AUDITOR') { %>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/auditor/accounts' ? 'active' : '' %>" href="/auditor/accounts">
+          <i class="bi bi-wallet-fill"></i>
+          <span>Audit Accounts</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <%= currentPath === '/auditor/ledger' ? 'active' : '' %>" href="/auditor/ledger">
+          <i class="bi bi-journal-check"></i>
+          <span>Immutable Ledger</span>
+        </a>
+      </li>
+    <% } %>
+  </ul>
+</aside>
+

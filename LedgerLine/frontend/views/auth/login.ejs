@@ -1,0 +1,54 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card card-ll border-0 shadow-sm p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="stat-icon stat-icon-primary mx-auto mb-3">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <h3 class="fw-bold">Sign In to LedgerLine</h3>
+          <p class="text-muted small">Access your accounts and secure financial dashboard</p>
+        </div>
+
+        <form action="/auth/login" method="POST" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold">Username or Email</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control" id="username" name="username" placeholder="Enter username or email" required autofocus>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary-ll w-100 py-2 fs-6 mb-3">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </button>
+
+          <div class="text-center">
+            <span class="text-muted small">Don't have an account? </span>
+            <a href="/auth/register" class="fw-semibold text-decoration-none">Create Account</a>
+          </div>
+        </form>
+
+        <div class="mt-4 pt-3 border-top text-center text-muted small">
+          <p class="mb-1 fw-semibold">Demo Credentials:</p>
+          <code>admin / Admin@12345</code> (Admin)<br>
+          <code>auditor / Auditor@12345</code> (Auditor)<br>
+          <code>alice / Alice@12345</code> (Account Holder)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

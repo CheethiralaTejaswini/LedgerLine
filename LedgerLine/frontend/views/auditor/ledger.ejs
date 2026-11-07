@@ -1,0 +1,115 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Immutable Master Ledger</h3>
+        <p class="text-muted small mb-0">System-wide append-only cryptographic ledger with zero mutation allowance</p>
+      </div>
+      <div class="d-flex gap-2">
+        <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+          <i class="bi bi-lock-fill me-1"></i> Append-Only Strictly Enforced
+        </span>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card card-ll border-0 shadow-sm mb-4 p-3">
+      <form action="/auditor/ledger" method="GET" class="row g-2 align-items-center">
+        <div class="col-sm-3">
+          <select name="type" class="form-select form-select-sm">
+            <option value="">All Movement Types</option>
+            <option value="DEPOSIT" <%= type === 'DEPOSIT' ? 'selected' : '' %>>Deposit</option>
+            <option value="WITHDRAWAL" <%= type === 'WITHDRAWAL' ? 'selected' : '' %>>Withdrawal</option>
+            <option value="TRANSFER_DEBIT" <%= type === 'TRANSFER_DEBIT' ? 'selected' : '' %>>Transfer Debit</option>
+            <option value="TRANSFER_CREDIT" <%= type === 'TRANSFER_CREDIT' ? 'selected' : '' %>>Transfer Credit</option>
+            <option value="REFUSED_ATTEMPT" <%= type === 'REFUSED_ATTEMPT' ? 'selected' : '' %>>Refused Attempt</option>
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <select name="status" class="form-select form-select-sm">
+            <option value="">All Statuses</option>
+            <option value="POSTED" <%= status === 'POSTED' ? 'selected' : '' %>>POSTED</option>
+            <option value="REFUSED" <%= status === 'REFUSED' ? 'selected' : '' %>>REFUSED</option>
+          </select>
+        </div>
+        <div class="col-sm-4 d-flex gap-1">
+          <input type="date" name="startDate" class="form-control form-control-sm" value="<%= startDate %>" title="Start Date">
+          <input type="date" name="endDate" class="form-control form-control-sm" value="<%= endDate %>" title="End Date">
+        </div>
+        <div class="col-sm-2 d-flex gap-2">
+          <button type="submit" class="btn btn-dark btn-sm w-100">Filter</button>
+          <a href="/auditor/ledger" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i></a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Entry Ref</th>
+                <th>Timestamp</th>
+                <th>Account</th>
+                <th>Type</th>
+                <th class="text-end">Debit</th>
+                <th class="text-end">Credit</th>
+                <th class="text-end">Balance After</th>
+                <th>Status</th>
+                <th>Initiated By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (entries && entries.length > 0) { %>
+                <% entries.forEach(e => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= e.entryReference %></span></td>
+                    <td class="text-muted small"><%= new Date(e.timestamp).toLocaleString() %></td>
+                    <td class="font-monospace fw-bold"><%= e.accountNumber %></td>
+                    <td>
+                      <span class="badge bg-light text-dark border small"><%= e.transactionType %></span>
+                    </td>
+                    <td class="text-end debit-entry"><%= e.debitAmount > 0 ? formatINR(e.debitAmount) : '—' %></td>
+                    <td class="text-end credit-entry"><%= e.creditAmount > 0 ? formatINR(e.creditAmount) : '—' %></td>
+                    <td class="text-end fw-bold font-monospace"><%= formatINR(e.balanceAfter) %></td>
+                    <td>
+                      <span class="badge <%= e.status === 'POSTED' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= e.status %>
+                      </span>
+                    </td>
+                    <td class="small"><%= e.initiatedBy ? e.initiatedBy.username : 'System' %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="9" class="text-center py-4 text-muted">No ledger entries match the criteria.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing page <%= page %> of <%= pages %> (<%= total %> total ledger records)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/auditor/ledger?page=<%= p %>&type=<%= type %>&status=<%= status %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= p %></a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+

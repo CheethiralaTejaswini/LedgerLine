@@ -1,0 +1,127 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Transaction History</h3>
+        <p class="text-muted small mb-0">Complete traceable log of your financial activities</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/transactions/deposit" class="btn btn-outline-success btn-sm"><i class="bi bi-plus-circle me-1"></i> Deposit</a>
+        <a href="/transactions/withdraw" class="btn btn-outline-danger btn-sm"><i class="bi bi-dash-circle me-1"></i> Withdraw</a>
+        <a href="/transactions/transfer" class="btn btn-accent-ll btn-sm"><i class="bi bi-arrow-left-right me-1"></i> Transfer</a>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card card-ll border-0 shadow-sm mb-4 p-3">
+      <form action="/transactions" method="GET" class="row g-2 align-items-center">
+        <div class="col-sm-4">
+          <select name="type" class="form-select form-select-sm">
+            <option value="">All Transaction Types</option>
+            <option value="DEPOSIT" <%= type === 'DEPOSIT' ? 'selected' : '' %>>Deposit</option>
+            <option value="WITHDRAWAL" <%= type === 'WITHDRAWAL' ? 'selected' : '' %>>Withdrawal</option>
+            <option value="TRANSFER" <%= type === 'TRANSFER' ? 'selected' : '' %>>Transfer</option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <select name="status" class="form-select form-select-sm">
+            <option value="">All Statuses</option>
+            <option value="SUCCESS" <%= status === 'SUCCESS' ? 'selected' : '' %>>Success</option>
+            <option value="FAILED" <%= status === 'FAILED' ? 'selected' : '' %>>Failed</option>
+            <option value="PENDING" <%= status === 'PENDING' ? 'selected' : '' %>>Pending</option>
+          </select>
+        </div>
+        <div class="col-sm-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ll btn-sm w-100"><i class="bi bi-funnel me-1"></i> Filter</button>
+          <a href="/transactions" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i> Reset</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Type</th>
+                <th>Source A/C</th>
+                <th>Destination A/C</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Remark</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (transactions && transactions.length > 0) { %>
+                <% transactions.forEach(t => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= t.transactionReference %></span></td>
+                    <td>
+                      <% if (t.type === 'DEPOSIT') { %>
+                        <span class="badge bg-success-subtle text-success">DEPOSIT</span>
+                      <% } else if (t.type === 'WITHDRAWAL') { %>
+                        <span class="badge bg-danger-subtle text-danger">WITHDRAWAL</span>
+                      <% } else { %>
+                        <span class="badge bg-primary-subtle text-primary">TRANSFER</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <%= t.sourceAccountNumber ? t.sourceAccountNumber : '—' %>
+                    </td>
+                    <td>
+                      <%= t.destinationAccountNumber ? t.destinationAccountNumber : '—' %>
+                    </td>
+                    <td class="currency-inr fw-bold <%= t.type === 'DEPOSIT' ? 'text-success' : 'text-danger' %>">
+                      <%= t.type === 'DEPOSIT' ? '+' : '-' %> <%= t.formattedAmount %>
+                    </td>
+                    <td>
+                      <span class="badge <%= t.status === 'SUCCESS' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= t.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small text-truncate" style="max-width: 180px;"><%= t.description || '—' %></td>
+                    <td class="text-muted small"><%= new Date(t.createdAt).toLocaleString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No transactions found matching your criteria.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing page <%= page %> of <%= pages %> (<%= total %> total records)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="/transactions?page=<%= page - 1 %>&type=<%= type %>&status=<%= status %>">&laquo;</a>
+              </li>
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/transactions?page=<%= p %>&type=<%= type %>&status=<%= status %>"><%= p %></a>
+                </li>
+              <% } %>
+              <li class="page-item <%= page >= pages ? 'disabled' : '' %>">
+                <a class="page-link" href="/transactions?page=<%= page + 1 %>&type=<%= type %>&status=<%= status %>">&raquo;</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+

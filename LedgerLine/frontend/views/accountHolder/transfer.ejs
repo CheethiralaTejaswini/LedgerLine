@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card card-ll border-0 shadow-sm p-4 p-md-5">
+          <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+            <div class="stat-icon stat-icon-primary">
+              <i class="bi bi-arrow-left-right"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1">Internal Money Transfer</h4>
+              <p class="text-muted small mb-0">Direct account-to-account transfer with strict money conservation</p>
+            </div>
+          </div>
+
+          <% 
+            let currentSource = accounts.find(a => selectedSourceId && selectedSourceId.toString() === a._id.toString()) || accounts[0];
+            let activeBalancePaise = currentSource ? currentSource.balance : 0;
+          %>
+
+          <form action="/transactions/transfer" method="POST" class="transaction-form form-transfer" data-balance="<%= activeBalancePaise %>" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" id="idempotencyKey" name="idempotencyKey" value="<%= idempotencyKey %>">
+
+            <div class="mb-4">
+              <label for="sourceAccountId" class="form-label fw-semibold">Source Account (Debit)</label>
+              <select class="form-select form-select-lg" id="sourceAccountId" name="sourceAccountId" onchange="window.location.href='/transactions/transfer?from=' + this.value" required>
+                <% if (accounts && accounts.length > 0) { %>
+                  <% accounts.forEach(acc => { %>
+                    <option value="<%= acc._id %>" <%= currentSource && currentSource._id.toString() === acc._id.toString() ? 'selected' : '' %>>
+                      <%= acc.accountNumber %> (<%= acc.accountType %>) – Available: <%= acc.formattedBalance %>
+                    </option>
+                  <% }) %>
+                <% } else { %>
+                  <option disabled selected>No active source accounts</option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label for="destinationAccountNumber" class="form-label fw-semibold">Destination Account Number (Credit)</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light"><i class="bi bi-bank"></i></span>
+                <input type="text" class="form-control font-monospace" id="destinationAccountNumber" name="destinationAccountNumber" placeholder="e.g. 100847291034" maxlength="20" required>
+              </div>
+              <div class="form-text small">Enter the 12-digit LedgerLine account number of the recipient.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="amount" class="form-label fw-semibold">Transfer Amount</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light fw-bold">₹</span>
+                <input type="number" class="form-control" id="amount" name="amount" min="1" step="0.01" max="5000000" placeholder="0.00" required>
+              </div>
+              <div id="balance-preview"></div>
+              <div class="form-text small">Available liquid balance: <strong><%= currentSource ? currentSource.formattedBalance : '₹ 0.00' %></strong>.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="description" class="form-label fw-semibold">Transfer Remark / Reference (Optional)</label>
+              <input type="text" class="form-control" id="description" name="description" placeholder="e.g. Consulting fees, Project milestone" maxlength="255">
+            </div>
+
+            <div class="alert alert-light border p-3 small text-muted mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold text-dark"><i class="bi bi-lock-fill text-primary"></i> Atomic Guarantee & Idempotency Key:</span>
+                <span class="font-monospace small text-primary"><%= idempotencyKey %></span>
+              </div>
+              MongoDB session ACID transactions guarantee that either both accounts are updated or neither is. Total money is strictly conserved.
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="/dashboard" class="btn btn-outline-secondary px-4">Cancel</a>
+              <button type="submit" class="btn btn-accent-ll px-4">
+                <i class="bi bi-send-check me-1"></i> Execute Transfer
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

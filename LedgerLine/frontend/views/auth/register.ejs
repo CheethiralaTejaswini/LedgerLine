@@ -1,0 +1,73 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card card-ll border-0 shadow-sm p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="stat-icon stat-icon-success mx-auto mb-3">
+            <i class="bi bi-person-check-fill"></i>
+          </div>
+          <h3 class="fw-bold">Create LedgerLine Account</h3>
+          <p class="text-muted small">Register for individual banking or compliance auditing</p>
+        </div>
+
+        <form action="/auth/register" method="POST" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="fullName" class="form-label fw-semibold">Full Name</label>
+              <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Alice Johnson" required>
+            </div>
+            <div class="col-sm-6">
+              <label for="username" class="form-label fw-semibold">Username</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="alicejohnson" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="email" class="form-label fw-semibold">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="alice@example.com" required>
+            </div>
+            <div class="col-sm-6">
+              <label for="phone" class="form-label fw-semibold">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 9876543210">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="role" class="form-label fw-semibold">Account Role</label>
+            <select class="form-select" id="role" name="role" required>
+              <option value="ACCOUNT_HOLDER" selected>Account Holder (Perform Deposits, Transfers & Withdrawals)</option>
+              <option value="AUDITOR">Auditor (Read-Only Compliance & Ledger Verification)</option>
+            </select>
+            <div class="form-text small">Admin accounts are provisioned via system administrator privileges only.</div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label for="password" class="form-label fw-semibold">Password</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Min 8 characters" required>
+            </div>
+            <div class="col-sm-6">
+              <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-accent-ll w-100 py-2 fs-6 mb-3">
+            <i class="bi bi-check-circle me-1"></i> Complete Registration
+          </button>
+
+          <div class="text-center">
+            <span class="text-muted small">Already have an account? </span>
+            <a href="/auth/login" class="fw-semibold text-decoration-none">Sign In</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

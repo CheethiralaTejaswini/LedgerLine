@@ -1,0 +1,115 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="bg-white py-5 border-bottom">
+  <div class="container py-lg-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge bg-light text-primary border px-3 py-2 rounded-pill fw-semibold mb-3">
+          <i class="bi bi-shield-check me-1"></i> Enterprise Financial Core v2.0
+        </span>
+        <h1 class="display-4 fw-bold text-dark lh-sm mb-4">
+          Financial transactions with <span class="text-teal" style="color: #008080;">mathematical integrity</span> & concurrency safety.
+        </h1>
+        <p class="lead text-muted mb-4">
+          LedgerLine is a modern ledger management engine built to guarantee money conservation, zero double-spending, strict idempotency, and an append-only audit trail.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="/auth/register" class="btn btn-accent-ll btn-lg px-4 shadow">
+            <i class="bi bi-person-plus me-1"></i> Open Account
+          </a>
+          <a href="/auth/login" class="btn btn-outline-secondary btn-lg px-4">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card card-ll shadow-lg p-4 border-0">
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="p-2 bg-success-subtle text-success rounded-circle"><i class="bi bi-check2-all fs-4"></i></span>
+              <div>
+                <h6 class="mb-0 fw-bold">Live Conservation Guarantee</h6>
+                <small class="text-muted">Total Debits strictly equal Total Credits</small>
+              </div>
+            </div>
+            <span class="badge bg-success">100% Invariant</span>
+          </div>
+
+          <div class="bg-light p-3 rounded-3 mb-3">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Atomic Transfer Execution</span>
+              <span class="text-success fw-bold">COMMITTED</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold font-monospace">
+              <span>Debit: A/C 100847291034</span>
+              <span class="text-danger">- ₹ 25,000.00</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold font-monospace">
+              <span>Credit: A/C 100918237461</span>
+              <span class="text-success">+ ₹ 25,000.00</span>
+            </div>
+          </div>
+
+          <div class="row g-2 text-center small">
+            <div class="col-4">
+              <div class="border rounded p-2 bg-white">
+                <i class="bi bi-key-fill text-primary d-block fs-5 mb-1"></i>
+                <span class="fw-semibold">Idempotent</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-2 bg-white">
+                <i class="bi bi-arrow-repeat text-warning d-block fs-5 mb-1"></i>
+                <span class="fw-semibold">Race-Safe</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-2 bg-white">
+                <i class="bi bi-journal-bookmark-fill text-success d-block fs-5 mb-1"></i>
+                <span class="fw-semibold">Append-Only</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5 my-4">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Engineered for Financial Rigor</h2>
+    <p class="text-muted">Why institutions and engineers rely on LedgerLine's core guarantees.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card card-ll h-100 p-4 border-0">
+        <div class="stat-icon stat-icon-primary mb-3">
+          <i class="bi bi-cpu-fill"></i>
+        </div>
+        <h5 class="fw-bold">ACID Multi-Doc Transactions</h5>
+        <p class="text-muted mb-0">Every transfer leverages MongoDB sessions and replica set transactions. If any step fails, both balances are reverted completely.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-ll h-100 p-4 border-0">
+        <div class="stat-icon stat-icon-warning mb-3">
+          <i class="bi bi-fingerprint"></i>
+        </div>
+        <h5 class="fw-bold">UUIDv4 Request Idempotency</h5>
+        <p class="text-muted mb-0">Every financial mutation requires a unique key. Retries return the identical cached result without reprocessing duplicate charges.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-ll h-100 p-4 border-0">
+        <div class="stat-icon stat-icon-success mb-3">
+          <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <h5 class="fw-bold">Concurrency & Balance Locks</h5>
+        <p class="text-muted mb-0">Atomic conditional query updates ensure that parallel requests cannot overdraw accounts or double-spend the same rupee.</p>
+      </div>
+    </div>
+  </div>
+</div>
+

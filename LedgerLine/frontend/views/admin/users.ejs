@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">User Management</h3>
+        <p class="text-muted small mb-0">Control roles, access permissions, and account statuses</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">&larr; Back to Admin Center</a>
+    </div>
+
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Registered</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (users && users.length > 0) { %>
+                <% users.forEach(u => { %>
+                  <tr>
+                    <td>
+                      <div class="fw-bold"><%= u.fullName %></div>
+                      <span class="text-muted small">@<%= u.username %></span>
+                    </td>
+                    <td><%= u.email %></td>
+                    <td>
+                      <span class="badge <%= u.role === 'ADMIN' ? 'badge-role-admin' : u.role === 'AUDITOR' ? 'badge-role-auditor' : 'badge-role-holder' %>">
+                        <%= u.role %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge <%= u.status === 'ACTIVE' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= u.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small"><%= new Date(u.createdAt).toLocaleDateString() %></td>
+                    <td>
+                      <form action="/admin/users/<%= u._id %>/status" method="POST" class="d-inline-flex gap-2 align-items-center">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <select name="status" class="form-select form-select-sm" style="width: 110px;">
+                          <option value="ACTIVE" <%= u.status === 'ACTIVE' ? 'selected' : '' %>>ACTIVE</option>
+                          <option value="SUSPENDED" <%= u.status === 'SUSPENDED' ? 'selected' : '' %>>SUSPENDED</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">No users found.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing page <%= page %> of <%= pages %> (<%= total %> total users)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/admin/users?page=<%= p %>"><%= p %></a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+

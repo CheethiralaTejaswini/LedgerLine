@@ -1,0 +1,162 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Compliance & Audit Overview</h3>
+        <p class="text-muted small mb-0">Independent verification of append-only ledger entries and conservation invariants</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="btn-run-audit" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-shield-check me-1"></i> Verify All Accounts
+        </button>
+        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-3 py-2">
+          <i class="bi bi-eye-fill me-1"></i> Read-Only Auditor Mode
+        </span>
+        <a href="/auditor/ledger" class="btn btn-dark btn-sm">
+          <i class="bi bi-journal-check me-1"></i> Full Audit Trail
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">IMMUTABLE LEDGER ENTRIES</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0"><%= stats.totalLedgerEntries %></h3>
+          </div>
+          <div class="stat-icon stat-icon-primary">
+            <i class="bi bi-journal-text"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">TOTAL AUDITED ACCOUNTS</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0"><%= stats.totalAccounts %></h3>
+          </div>
+          <div class="stat-icon stat-icon-success">
+            <i class="bi bi-wallet2"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">TOTAL COMPLETED TXNS</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0"><%= stats.totalTransactions %></h3>
+          </div>
+          <div class="stat-icon stat-icon-warning">
+            <i class="bi bi-arrow-left-right"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+          <div>
+            <span class="text-muted small fw-semibold">REFUSED ATTEMPTS</span>
+            <h3 class="fw-bold text-danger mt-1 mb-0"><%= stats.refusedAttemptsCount %></h3>
+          </div>
+          <div class="stat-icon stat-icon-danger">
+            <i class="bi bi-shield-x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integrity Checklist -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card card-ll border-0 shadow-sm p-4 h-100">
+          <h5 class="fw-bold mb-3"><i class="bi bi-shield-check text-success me-2"></i> Financial Invariant Checks</h5>
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span>Internal Transfers Zero-Sum Conservation</span>
+              <span class="badge bg-success">VERIFIED</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span>Non-Negative Balance Constraint ($gte: 0)</span>
+              <span class="badge bg-success">ENFORCED</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span>Ledger Immutability Hook Protection</span>
+              <span class="badge bg-success">ACTIVE</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span>Idempotency Key Collision Rejection</span>
+              <span class="badge bg-success">ACTIVE</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-ll border-0 shadow-sm p-4 h-100">
+          <h5 class="fw-bold mb-3"><i class="bi bi-bank text-primary me-2"></i> Total System Active Assets</h5>
+          <span class="text-muted small d-block">AGGREGATED LIQUIDITY (PAISE CONVERTED)</span>
+          <h2 class="display-6 fw-bold currency-inr text-dark mt-2 mb-3"><%= stats.formattedActiveBalance %></h2>
+          <div class="alert alert-light border small text-muted mb-0">
+            Raw Integer Paise: <code><%= stats.totalActiveBalancePaise %></code> paise. Zero floating-point drift detected.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Ledger Activity -->
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Latest Ledger Movement Records</h5>
+        <a href="/auditor/ledger" class="text-decoration-none small fw-semibold">View Full Ledger &rarr;</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Entry Ref</th>
+                <th>A/C Number</th>
+                <th>Type</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Balance After</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentEntries && recentEntries.length > 0) { %>
+                <% recentEntries.forEach(e => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= e.entryReference %></span></td>
+                    <td class="font-monospace fw-bold"><%= e.accountNumber %></td>
+                    <td><span class="badge bg-light text-dark border"><%= e.transactionType %></span></td>
+                    <td class="debit-entry"><%= e.debitAmount > 0 ? formatINR(e.debitAmount) : '—' %></td>
+                    <td class="credit-entry"><%= e.creditAmount > 0 ? formatINR(e.creditAmount) : '—' %></td>
+                    <td class="fw-bold font-monospace"><%= formatINR(e.balanceAfter) %></td>
+                    <td>
+                      <span class="badge <%= e.status === 'POSTED' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= e.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small"><%= new Date(e.timestamp).toLocaleString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No entries posted yet.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

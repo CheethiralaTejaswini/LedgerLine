@@ -1,0 +1,121 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Global Accounts Oversight</h3>
+        <p class="text-muted small mb-0">Inspect, monitor, and freeze/unfreeze client accounts</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">&larr; Back to Admin Center</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card card-ll border-0 shadow-sm mb-4 p-3">
+      <form action="/admin/accounts" method="GET" class="row g-2 align-items-center">
+        <div class="col-sm-4">
+          <input type="text" name="search" class="form-control form-control-sm" placeholder="Search Account Number..." value="<%= search %>">
+        </div>
+        <div class="col-sm-3">
+          <select name="type" class="form-select form-select-sm">
+            <option value="">All Account Types</option>
+            <option value="SAVINGS" <%= type === 'SAVINGS' ? 'selected' : '' %>>Savings</option>
+            <option value="CURRENT" <%= type === 'CURRENT' ? 'selected' : '' %>>Current</option>
+            <option value="BUSINESS" <%= type === 'BUSINESS' ? 'selected' : '' %>>Business</option>
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <select name="status" class="form-select form-select-sm">
+            <option value="">All Statuses</option>
+            <option value="ACTIVE" <%= status === 'ACTIVE' ? 'selected' : '' %>>Active</option>
+            <option value="FROZEN" <%= status === 'FROZEN' ? 'selected' : '' %>>Frozen</option>
+            <option value="CLOSED" <%= status === 'CLOSED' ? 'selected' : '' %>>Closed</option>
+          </select>
+        </div>
+        <div class="col-sm-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ll btn-sm w-100">Filter</button>
+          <a href="/admin/accounts" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i></a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Account Number</th>
+                <th>Holder</th>
+                <th>Type</th>
+                <th>Current Balance</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (accounts && accounts.length > 0) { %>
+                <% accounts.forEach(acc => { %>
+                  <tr>
+                    <td><span class="font-monospace fw-bold"><%= acc.accountNumber %></span></td>
+                    <td>
+                      <% if (acc.userId) { %>
+                        <div class="fw-semibold"><%= acc.userId.fullName %></div>
+                        <span class="text-muted small">@<%= acc.userId.username %></span>
+                      <% } else { %>
+                        <span class="text-muted">Unlinked</span>
+                      <% } %>
+                    </td>
+                    <td><span class="badge bg-light text-dark border"><%= acc.accountType %></span></td>
+                    <td class="currency-inr fw-bold fs-6"><%= acc.formattedBalance %></td>
+                    <td>
+                      <span class="badge <%= acc.status === 'ACTIVE' ? 'badge-status-active' : acc.status === 'FROZEN' ? 'badge-status-frozen' : 'badge-status-closed' %>">
+                        <%= acc.status %>
+                      </span>
+                    </td>
+                    <td class="text-muted small"><%= new Date(acc.createdAt).toLocaleDateString() %></td>
+                    <td>
+                      <form action="/admin/accounts/<%= acc._id %>/status" method="POST" class="d-inline-flex gap-1 align-items-center">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <select name="status" class="form-select form-select-sm" style="width: 100px;">
+                          <option value="ACTIVE" <%= acc.status === 'ACTIVE' ? 'selected' : '' %>>ACTIVE</option>
+                          <option value="FROZEN" <%= acc.status === 'FROZEN' ? 'selected' : '' %>>FROZEN</option>
+                          <option value="CLOSED" <%= acc.status === 'CLOSED' ? 'selected' : '' %>>CLOSED</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
+                        <a href="/accounts/<%= acc._id %>/statement" class="btn btn-sm btn-outline-dark" title="View Statement"><i class="bi bi-file-text"></i></a>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="7" class="text-center py-4 text-muted">No accounts match the criteria.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing page <%= page %> of <%= pages %> (<%= total %> total accounts)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/admin/accounts?page=<%= p %>&search=<%= search %>&type=<%= type %>&status=<%= status %>"><%= p %></a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+

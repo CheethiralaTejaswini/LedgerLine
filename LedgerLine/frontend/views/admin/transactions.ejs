@@ -1,0 +1,109 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-wrapper">
+  <%- include('../partials/sidebar') %>
+
+  <div class="dashboard-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="fw-bold mb-1">Global System Transactions</h3>
+        <p class="text-muted small mb-0">Full audit log of all financial movements across all accounts</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm">&larr; Back to Admin Center</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card card-ll border-0 shadow-sm mb-4 p-3">
+      <form action="/admin/transactions" method="GET" class="row g-2 align-items-center">
+        <div class="col-sm-4">
+          <input type="text" name="search" class="form-control form-control-sm" placeholder="Search Ref or Account No..." value="<%= search %>">
+        </div>
+        <div class="col-sm-3">
+          <select name="type" class="form-select form-select-sm">
+            <option value="">All Types</option>
+            <option value="DEPOSIT" <%= type === 'DEPOSIT' ? 'selected' : '' %>>Deposit</option>
+            <option value="WITHDRAWAL" <%= type === 'WITHDRAWAL' ? 'selected' : '' %>>Withdrawal</option>
+            <option value="TRANSFER" <%= type === 'TRANSFER' ? 'selected' : '' %>>Transfer</option>
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <select name="status" class="form-select form-select-sm">
+            <option value="">All Statuses</option>
+            <option value="SUCCESS" <%= status === 'SUCCESS' ? 'selected' : '' %>>Success</option>
+            <option value="FAILED" <%= status === 'FAILED' ? 'selected' : '' %>>Failed</option>
+            <option value="PENDING" <%= status === 'PENDING' ? 'selected' : '' %>>Pending</option>
+          </select>
+        </div>
+        <div class="col-sm-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ll btn-sm w-100">Filter</button>
+          <a href="/admin/transactions" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i></a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card card-ll border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-ll table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Type</th>
+                <th>Source A/C</th>
+                <th>Destination A/C</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Initiated By</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (transactions && transactions.length > 0) { %>
+                <% transactions.forEach(t => { %>
+                  <tr>
+                    <td><span class="font-monospace text-muted small"><%= t.transactionReference %></span></td>
+                    <td>
+                      <span class="badge bg-light text-dark border"><%= t.type %></span>
+                    </td>
+                    <td class="font-monospace small"><%= t.sourceAccountNumber || '—' %></td>
+                    <td class="font-monospace small"><%= t.destinationAccountNumber || '—' %></td>
+                    <td class="currency-inr fw-bold"><%= t.formattedAmount %></td>
+                    <td>
+                      <span class="badge <%= t.status === 'SUCCESS' ? 'badge-status-active' : 'badge-status-closed' %>">
+                        <%= t.status %>
+                      </span>
+                    </td>
+                    <td class="small">
+                      <%= t.initiatedBy ? t.initiatedBy.username : 'System' %>
+                    </td>
+                    <td class="text-muted small"><%= new Date(t.createdAt).toLocaleString() %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No transactions found.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <% if (pages > 1) { %>
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Showing page <%= page %> of <%= pages %> (<%= total %> total records)</span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <% for (let p = 1; p <= pages; p++) { %>
+                <li class="page-item <%= p === page ? 'active' : '' %>">
+                  <a class="page-link" href="/admin/transactions?page=<%= p %>&search=<%= search %>&type=<%= type %>&status=<%= status %>"><%= p %></a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
