@@ -24,6 +24,9 @@ const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 
+// Trust reverse proxy (Render, Heroku, AWS ELB, NGINX) for secure cookies
+app.set('trust proxy', 1);
+
 // View engine setup
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');

@@ -202,7 +202,23 @@ LedgerLine/
 
 ---
 
-## 4. Default Demo Accounts
+## 4. Production Deployment (Render + MongoDB Atlas)
+
+See the full [Production Deployment Guide](docs/DEPLOYMENT_GUIDE.md) for step-by-step instructions.
+
+1. Create a free **M0 cluster** on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (replica set enabled by default).
+2. Create a new **Web Service** on [Render](https://render.com) linked to this repository.
+3. Configure Environment Variables:
+   - `NODE_ENV`: `production`
+   - `MONGO_URL`: `mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/ledgerline?retryWrites=true&w=majority`
+   - `SESSION_SECRET`: `<secure-random-string>`
+   - `CSRF_SECRET`: `<secure-random-string>`
+4. Deploy! Render will build and launch your service with a free live HTTPS URL.
+5. In Render's **Shell** tab, run `npm run seed` to provision demo accounts.
+
+---
+
+## 5. Default Demo Accounts
 
 The seed script creates ready-to-test accounts across all three security roles:
 
