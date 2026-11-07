@@ -5,6 +5,8 @@ function createSessionConfig() {
   const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/ledgerline';
   const sessionSecret = process.env.SESSION_SECRET || 'ledgerline_super_secret_session_key_2026';
   const isProduction = process.env.NODE_ENV === 'production';
+  // Secure cookies require HTTPS. Enable in production on cloud platforms (Render sets RENDER=true) or when explicitly configured.
+  const secureCookie = process.env.COOKIE_SECURE === 'true' || (isProduction && (process.env.RENDER === 'true' || process.env.NODE_ENV_HTTPS === 'true'));
 
   const storeOptions = {
     mongoUrl,
@@ -29,7 +31,7 @@ function createSessionConfig() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: isProduction,
+      secure: secureCookie,
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
