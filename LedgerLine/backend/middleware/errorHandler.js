@@ -44,6 +44,8 @@ function errorHandler(err, req, res, next) {
   res.status(statusCode).render('errors/500', {
     title: `${statusCode} Error`,
     user: req.user || null,
+    currUser: req.user || null,
+    currentPath: req.path || '',
     statusCode,
     message,
     stack: isDev ? err.stack : null
@@ -61,6 +63,8 @@ function notFoundHandler(req, res, next) {
   res.status(404).render('errors/404', {
     title: 'Page Not Found',
     user: req.user || null,
+    currUser: req.user || null,
+    currentPath: req.path || '',
     url: req.originalUrl
   });
 }

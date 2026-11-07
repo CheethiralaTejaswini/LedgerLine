@@ -1,83 +1,87 @@
+<% 
+  const activeUser = (typeof currUser !== 'undefined' && currUser) ? currUser : (typeof user !== 'undefined' && user) ? user : null; 
+  const activePath = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : '';
+%>
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-user">
       <div class="sidebar-avatar">
-        <%= currUser ? currUser.fullName.charAt(0).toUpperCase() : 'U' %>
+        <%= activeUser ? activeUser.fullName.charAt(0).toUpperCase() : 'U' %>
       </div>
       <div class="overflow-hidden">
-        <div class="fw-bold text-white text-truncate"><%= currUser ? currUser.fullName : 'Guest' %></div>
-        <div class="small text-muted"><%= currUser ? currUser.role : '' %></div>
+        <div class="fw-bold text-white text-truncate"><%= activeUser ? activeUser.fullName : 'Guest' %></div>
+        <div class="small text-muted"><%= activeUser ? activeUser.role : '' %></div>
       </div>
     </div>
   </div>
 
   <ul class="sidebar-nav">
     <li class="nav-item">
-      <a class="nav-link <%= currentPath === '/dashboard' || currentPath === '/admin/dashboard' || currentPath === '/auditor/dashboard' ? 'active' : '' %>" href="/dashboard">
+      <a class="nav-link <%= activePath === '/dashboard' || activePath === '/admin/dashboard' || activePath === '/auditor/dashboard' ? 'active' : '' %>" href="/dashboard">
         <i class="bi bi-grid-1x2-fill"></i>
         <span>Dashboard</span>
       </a>
     </li>
 
-    <% if (currUser && currUser.role === 'ACCOUNT_HOLDER') { %>
+    <% if (activeUser && activeUser.role === 'ACCOUNT_HOLDER') { %>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/accounts/new' ? 'active' : '' %>" href="/accounts/new">
+        <a class="nav-link <%= activePath === '/accounts/new' ? 'active' : '' %>" href="/accounts/new">
           <i class="bi bi-plus-circle"></i>
           <span>Open Account</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/transactions/deposit' ? 'active' : '' %>" href="/transactions/deposit">
+        <a class="nav-link <%= activePath === '/transactions/deposit' ? 'active' : '' %>" href="/transactions/deposit">
           <i class="bi bi-box-arrow-in-down-right"></i>
           <span>Deposit Funds</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/transactions/withdraw' ? 'active' : '' %>" href="/transactions/withdraw">
+        <a class="nav-link <%= activePath === '/transactions/withdraw' ? 'active' : '' %>" href="/transactions/withdraw">
           <i class="bi bi-box-arrow-up-left"></i>
           <span>Withdraw Funds</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/transactions/transfer' ? 'active' : '' %>" href="/transactions/transfer">
+        <a class="nav-link <%= activePath === '/transactions/transfer' ? 'active' : '' %>" href="/transactions/transfer">
           <i class="bi bi-arrow-left-right"></i>
           <span>Internal Transfer</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/transactions' ? 'active' : '' %>" href="/transactions">
+        <a class="nav-link <%= activePath === '/transactions' ? 'active' : '' %>" href="/transactions">
           <i class="bi bi-clock-history"></i>
           <span>Transaction History</span>
         </a>
       </li>
-    <% } else if (currUser && currUser.role === 'ADMIN') { %>
+    <% } else if (activeUser && activeUser.role === 'ADMIN') { %>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/admin/users' ? 'active' : '' %>" href="/admin/users">
+        <a class="nav-link <%= activePath === '/admin/users' ? 'active' : '' %>" href="/admin/users">
           <i class="bi bi-people-fill"></i>
           <span>Manage Users</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/admin/accounts' ? 'active' : '' %>" href="/admin/accounts">
+        <a class="nav-link <%= activePath === '/admin/accounts' ? 'active' : '' %>" href="/admin/accounts">
           <i class="bi bi-wallet-fill"></i>
           <span>Manage Accounts</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/admin/transactions' ? 'active' : '' %>" href="/admin/transactions">
+        <a class="nav-link <%= activePath === '/admin/transactions' ? 'active' : '' %>" href="/admin/transactions">
           <i class="bi bi-receipt-cutoff"></i>
           <span>All Transactions</span>
         </a>
       </li>
-    <% } else if (currUser && currUser.role === 'AUDITOR') { %>
+    <% } else if (activeUser && activeUser.role === 'AUDITOR') { %>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/auditor/accounts' ? 'active' : '' %>" href="/auditor/accounts">
+        <a class="nav-link <%= activePath === '/auditor/accounts' ? 'active' : '' %>" href="/auditor/accounts">
           <i class="bi bi-wallet-fill"></i>
           <span>Audit Accounts</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link <%= currentPath === '/auditor/ledger' ? 'active' : '' %>" href="/auditor/ledger">
+        <a class="nav-link <%= activePath === '/auditor/ledger' ? 'active' : '' %>" href="/auditor/ledger">
           <i class="bi bi-journal-check"></i>
           <span>Immutable Ledger</span>
         </a>

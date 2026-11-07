@@ -1,3 +1,7 @@
+<% 
+  const loggedInUser = (typeof currUser !== 'undefined' && currUser) ? currUser : (typeof user !== 'undefined' && user) ? user : null; 
+  const activePath = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : '';
+%>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-2 shadow-sm">
   <div class="container-fluid px-lg-4">
     <a class="navbar-brand d-flex align-items-center gap-2" href="/">
@@ -11,58 +15,58 @@
 
     <div class="collapse navbar-collapse" id="ledgerNavbar">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <% if (currUser) { %>
+        <% if (loggedInUser) { %>
           <li class="nav-item">
-            <a class="nav-link <%= currentPath.startsWith('/dashboard') || currentPath.startsWith('/admin/dashboard') || currentPath.startsWith('/auditor/dashboard') ? 'active' : '' %>" href="/dashboard">
+            <a class="nav-link <%= activePath.startsWith('/dashboard') || activePath.startsWith('/admin/dashboard') || activePath.startsWith('/auditor/dashboard') ? 'active' : '' %>" href="/dashboard">
               <i class="bi bi-speedometer2 me-1"></i> Dashboard
             </a>
           </li>
 
-          <% if (currUser.role === 'ACCOUNT_HOLDER') { %>
+          <% if (loggedInUser.role === 'ACCOUNT_HOLDER') { %>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/transactions/deposit') ? 'active' : '' %>" href="/transactions/deposit">
+              <a class="nav-link <%= activePath.startsWith('/transactions/deposit') ? 'active' : '' %>" href="/transactions/deposit">
                 <i class="bi bi-arrow-down-circle me-1"></i> Deposit
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/transactions/withdraw') ? 'active' : '' %>" href="/transactions/withdraw">
+              <a class="nav-link <%= activePath.startsWith('/transactions/withdraw') ? 'active' : '' %>" href="/transactions/withdraw">
                 <i class="bi bi-arrow-up-circle me-1"></i> Withdraw
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/transactions/transfer') ? 'active' : '' %>" href="/transactions/transfer">
+              <a class="nav-link <%= activePath.startsWith('/transactions/transfer') ? 'active' : '' %>" href="/transactions/transfer">
                 <i class="bi bi-arrow-left-right me-1"></i> Transfer
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath === '/transactions' ? 'active' : '' %>" href="/transactions">
+              <a class="nav-link <%= activePath === '/transactions' ? 'active' : '' %>" href="/transactions">
                 <i class="bi bi-clock-history me-1"></i> History
               </a>
             </li>
-          <% } else if (currUser.role === 'ADMIN') { %>
+          <% } else if (loggedInUser.role === 'ADMIN') { %>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/admin/users') ? 'active' : '' %>" href="/admin/users">
+              <a class="nav-link <%= activePath.startsWith('/admin/users') ? 'active' : '' %>" href="/admin/users">
                 <i class="bi bi-people me-1"></i> Users
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/admin/accounts') ? 'active' : '' %>" href="/admin/accounts">
+              <a class="nav-link <%= activePath.startsWith('/admin/accounts') ? 'active' : '' %>" href="/admin/accounts">
                 <i class="bi bi-wallet2 me-1"></i> Accounts
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/admin/transactions') ? 'active' : '' %>" href="/admin/transactions">
+              <a class="nav-link <%= activePath.startsWith('/admin/transactions') ? 'active' : '' %>" href="/admin/transactions">
                 <i class="bi bi-arrow-left-right me-1"></i> Transactions
               </a>
             </li>
-          <% } else if (currUser.role === 'AUDITOR') { %>
+          <% } else if (loggedInUser.role === 'AUDITOR') { %>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/auditor/accounts') ? 'active' : '' %>" href="/auditor/accounts">
+              <a class="nav-link <%= activePath.startsWith('/auditor/accounts') ? 'active' : '' %>" href="/auditor/accounts">
                 <i class="bi bi-wallet2 me-1"></i> Accounts
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link <%= currentPath.startsWith('/auditor/ledger') ? 'active' : '' %>" href="/auditor/ledger">
+              <a class="nav-link <%= activePath.startsWith('/auditor/ledger') ? 'active' : '' %>" href="/auditor/ledger">
                 <i class="bi bi-journal-text me-1"></i> Immutable Ledger
               </a>
             </li>
@@ -71,7 +75,7 @@
       </ul>
 
       <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
-        <% if (!currUser) { %>
+        <% if (!loggedInUser) { %>
           <li class="nav-item">
             <a class="nav-link fw-semibold" href="/auth/login">Sign In</a>
           </li>
@@ -81,18 +85,18 @@
         <% } else { %>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <span class="badge rounded-pill bg-light text-dark border px-2 py-1"><i class="bi bi-person-fill me-1"></i> <%= currUser.username %></span>
-              <span class="badge <%= currUser.role === 'ADMIN' ? 'badge-role-admin' : currUser.role === 'AUDITOR' ? 'badge-role-auditor' : 'badge-role-holder' %> small">
-                <%= currUser.role %>
+              <span class="badge rounded-pill bg-light text-dark border px-2 py-1"><i class="bi bi-person-fill me-1"></i> <%= loggedInUser.username %></span>
+              <span class="badge <%= loggedInUser.role === 'ADMIN' ? 'badge-role-admin' : loggedInUser.role === 'AUDITOR' ? 'badge-role-auditor' : 'badge-role-holder' %> small">
+                <%= loggedInUser.role %>
               </span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu">
-              <li><h6 class="dropdown-header"><%= currUser.fullName %></h6></li>
-              <li><span class="dropdown-item-text text-muted small"><%= currUser.email %></span></li>
+              <li><h6 class="dropdown-header"><%= loggedInUser.fullName %></h6></li>
+              <li><span class="dropdown-item-text text-muted small"><%= loggedInUser.email %></span></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/auth/logout" method="POST" class="d-inline">
-                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                   <button type="submit" class="dropdown-item text-danger">
                     <i class="bi bi-box-arrow-right me-2"></i> Sign Out
                   </button>

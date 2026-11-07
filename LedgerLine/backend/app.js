@@ -49,20 +49,20 @@ configurePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CSRF Protection
-app.use(csrfProtection);
-
-// Global Template Variables & Utilities
+// Global Template Variables & Utilities (Mounted before CSRF so error handlers always have locals)
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.currUser = req.user || null;
   res.locals.user = req.user || null;
   res.locals.formatINR = formatPaiseToINR;
-  res.locals.currentPath = req.path;
+  res.locals.currentPath = req.path || '';
   res.locals.razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
   next();
 });
+
+// CSRF Protection
+app.use(csrfProtection);
 
 // Landing Page
 app.get('/', (req, res) => {

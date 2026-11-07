@@ -43,9 +43,20 @@ function csrfProtection(req, res, next) {
     }
 
     req.flash('error', 'Session expired or invalid security token. Please try again.');
+
+    // If session expired on login or register, redirect back cleanly so fresh token is generated
+    if (req.originalUrl.includes('/auth/login')) {
+      return res.redirect('/auth/login');
+    }
+    if (req.originalUrl.includes('/auth/register')) {
+      return res.redirect('/auth/register');
+    }
+
     return res.status(403).render('errors/403', {
       title: 'Security Token Error',
       user: req.user || null,
+      currUser: req.user || null,
+      currentPath: req.path || '',
       message: 'Invalid or missing CSRF token. State-changing requests must include a valid security token.'
     });
   }
