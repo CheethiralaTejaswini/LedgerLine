@@ -4,10 +4,10 @@
   "description": "LedgerLine Root Workspace",
   "scripts": {
     "build": "cd LedgerLine && npm install",
-    "postinstall": "cd LedgerLine && npm install",
-    "start": "cd LedgerLine && node backend/server.js",
-    "test": "cd LedgerLine && node --test --test-concurrency=1 backend/tests/*.test.js",
-    "seed": "cd LedgerLine && node backend/config/seed.js"
+    "postinstall": "node -e \"const fs=require('fs'), cp=require('child_process'); if(fs.existsSync('LedgerLine')) cp.execSync('npm install', {cwd: 'LedgerLine', stdio: 'inherit'});\"",
+    "start": "node start.js",
+    "test": "node -e \"const fs=require('fs'), cp=require('child_process'); const cwd = fs.existsSync('LedgerLine') ? 'LedgerLine' : '.'; cp.execSync('node --test --test-concurrency=1 backend/tests/*.test.js', {cwd, stdio: 'inherit'});\"",
+    "seed": "node -e \"const fs=require('fs'); if(fs.existsSync('LedgerLine')) process.chdir('LedgerLine'); require('./backend/config/seed.js');\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
