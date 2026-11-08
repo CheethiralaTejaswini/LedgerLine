@@ -16,7 +16,7 @@ const depositSchema = Joi.object({
     'string.guid': 'Invalid idempotency key format (must be UUIDv4)',
     'any.required': 'Idempotency key is required for financial operations'
   }),
-  description: Joi.string().max(255).allow('').optional(),
+  description: Joi.string().trim().max(255).replace(/[<>]/g, '').allow('').optional(),
   _csrf: Joi.string().optional()
 });
 
@@ -36,7 +36,7 @@ const withdrawSchema = Joi.object({
     'string.guid': 'Invalid idempotency key format (must be UUIDv4)',
     'any.required': 'Idempotency key is required for financial operations'
   }),
-  description: Joi.string().max(255).allow('').optional(),
+  description: Joi.string().trim().max(255).replace(/[<>]/g, '').allow('').optional(),
   _csrf: Joi.string().optional()
 });
 
@@ -45,8 +45,8 @@ const transferSchema = Joi.object({
     'string.length': 'Invalid source account ID',
     'any.required': 'Source account is required'
   }),
-  destinationAccountNumber: Joi.string().trim().min(8).max(20).required().messages({
-    'string.min': 'Destination account number must be at least 8 digits',
+  destinationAccountNumber: Joi.string().trim().regex(/^\d{12}$/).required().messages({
+    'string.pattern.base': 'Destination account number must be a valid 12-digit number',
     'any.required': 'Destination account number is required'
   }),
   amount: Joi.number().positive().precision(2).min(1).max(5000000).required().messages({
@@ -60,7 +60,7 @@ const transferSchema = Joi.object({
     'string.guid': 'Invalid idempotency key format (must be UUIDv4)',
     'any.required': 'Idempotency key is required for financial operations'
   }),
-  description: Joi.string().max(255).allow('').optional(),
+  description: Joi.string().trim().max(255).replace(/[<>]/g, '').allow('').optional(),
   _csrf: Joi.string().optional()
 });
 

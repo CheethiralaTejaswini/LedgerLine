@@ -66,9 +66,80 @@ function paiseToRupees(paise) {
   return (paise || 0) / 100;
 }
 
+/**
+ * Converts integer paise into Indian currency words for bank receipts and vouchers.
+ * E.g., 150050 -> "Rupees One Thousand Five Hundred and Fifty Paise Only"
+ * @param {number} paise 
+ * @returns {string}
+ */
+function paiseToWords(paise) {
+  if (!Number.isInteger(paise) || paise < 0) return 'Zero Rupees Only';
+  if (paise === 0) return 'Zero Rupees Only';
+
+  const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+    'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+  function numToWords(n) {
+    let str = '';
+    if (n >= 10000000) {
+      str += numToWords(Math.floor(n / 10000000)) + ' Crore ';
+      n %= 10000000;
+    }
+    if (n >= 100000) {
+      str += numToWords(Math.floor(n / 100000)) + ' Lakh ';
+      n %= 100000;
+    }
+    if (n >= 1000) {
+      str += numToWords(Math.floor(n / 1000)) + ' Thousand ';
+      n %= 1000;
+    }
+    if (n >= 100) {
+      str += numToWords(Math.floor(n / 100)) + ' Hundred ';
+      n %= 100;
+    }
+    if (n > 0) {
+      if (n < 20) str += units[n] + ' ';
+      else {
+        str += tens[Math.floor(n / 10)] + ' ';
+        if (n % 10 > 0) str += units[n % 10] + ' ';
+      }
+    }
+    return str.trim();
+  }
+
+  const rupees = Math.floor(paise / 100);
+  const remainderPaise = paise % 100;
+
+  let result = 'Rupees ';
+  if (rupees > 0) {
+    result += numToWords(rupees);
+  } else {
+    result += 'Zero';
+  }
+
+  if (remainderPaise > 0) {
+    result += ` and ${numToWords(remainderPaise)} Paise`;
+  }
+  result += ' Only';
+
+  return result.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Validates that an amount is a strictly valid non-negative integer paise.
+ * @param {any} paise
+ * @returns {boolean}
+ */
+function isValidPaiseInteger(paise) {
+  return typeof paise === 'number' && Number.isInteger(paise) && paise >= 0 && Number.isSafeInteger(paise);
+}
+
 module.exports = {
   toPaise,
   formatPaiseToINR,
-  paiseToRupees
+  paiseToRupees,
+  paiseToWords,
+  isValidPaiseInteger
 };
 
