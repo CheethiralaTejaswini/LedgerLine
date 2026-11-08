@@ -38,8 +38,21 @@ const transactionLimiter = rateLimit({
   }
 });
 
+// High-frequency API limiter for lookup & telemetry
+const apiLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'API rate limit exceeded. Please throttle requests.'
+  }
+});
+
 module.exports = {
   authLimiter,
-  transactionLimiter
+  transactionLimiter,
+  apiLimiter
 };
 

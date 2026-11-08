@@ -24,8 +24,13 @@ const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 
+const securityHeaders = require('./middleware/securityHeaders');
+
 // Trust reverse proxy (Render, Heroku, AWS ELB, NGINX) for secure cookies
 app.set('trust proxy', 1);
+
+// Apply Enterprise Security Headers globally
+app.use(securityHeaders);
 
 // View engine setup
 app.engine('ejs', ejsMate);
