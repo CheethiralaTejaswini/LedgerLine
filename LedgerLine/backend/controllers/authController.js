@@ -1,6 +1,7 @@
 const passport = require('passport');
 const User = require('../models/User');
 const AccountService = require('../services/accountService');
+const AuditService = require('../services/auditService');
 
 class AuthController {
   static renderRegister(req, res) {
@@ -39,6 +40,14 @@ class AuthController {
       // Log user in automatically after registration
       req.login(registeredUser, err => {
         if (err) return next(err);
+
+        AuditService.logEvent({
+          action: 'USER_REGISTERED',
+          severity: 'INFO',
+          user: registeredUser,
+          req,
+          details: { role: assignedRole }
+        });
 
         req.flash('success', `Welcome to LedgerLine, ${registeredUser.fullName}! Your account has been initialized.`);
 
@@ -81,6 +90,13 @@ class AuthController {
       if (err) return next(err);
 
       if (!user) {
+        AuditService.logEvent({
+          action: 'LOGIN_FAILED',
+          severity: 'WARN',
+          req,
+          details: { attemptedUsername: req.body.username || 'unknown' }
+        });
+
         if (req.xhr || req.headers.accept?.includes('application/json')) {
           return res.status(401).json({
             success: false,
@@ -93,6 +109,13 @@ class AuthController {
 
       req.login(user, loginErr => {
         if (loginErr) return next(loginErr);
+
+        AuditService.logEvent({
+          action: 'LOGIN_SUCCESS',
+          severity: 'INFO',
+          user,
+          req
+        });
 
         req.flash('success', `Welcome back, ${user.fullName}!`);
 
