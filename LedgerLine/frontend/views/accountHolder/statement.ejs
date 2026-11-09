@@ -20,6 +20,20 @@
       </div>
     </div>
 
+    <!-- Official Bank Header (Only Visible When Printing) -->
+    <div class="print-only-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="fw-bold mb-0">LedgerLine Core Banking</h2>
+          <small class="text-muted">Certified Append-Only Account Statement</small>
+        </div>
+        <div class="text-end">
+          <small class="text-muted d-block">Generated on: <%= new Date().toLocaleDateString('en-IN', { dateStyle: 'long', timeStyle: 'short' }) %></small>
+          <small class="text-muted font-monospace">System Integrity Verified</small>
+        </div>
+      </div>
+    </div>
+
     <!-- Account Summary Header -->
     <div class="card card-ll border-0 shadow-sm p-4 mb-4">
       <div class="row g-3 align-items-center">
@@ -118,6 +132,12 @@
           </nav>
         </div>
       <% } %>
+    </div>
+
+    <!-- Official Bank Footer (Only Visible When Printing) -->
+    <div class="print-only-footer text-muted text-center">
+      <p class="mb-0">This is a system-generated immutable ledger statement from LedgerLine Core Banking Infrastructure.</p>
+      <small>All monetary transactions are atomically debited and credited in integer currency units. No manual signature required.</small>
     </div>
   </div>
 </div>

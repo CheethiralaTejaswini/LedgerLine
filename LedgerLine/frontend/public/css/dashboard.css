@@ -156,3 +156,65 @@
   font-weight: 600;
 }
 
+/* Print Stylesheet for Official Statements and Receipts */
+@media print {
+  body {
+    background-color: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+
+  .sidebar,
+  .navbar,
+  footer,
+  .btn,
+  .alert,
+  .badge,
+  .no-print {
+    display: none !important;
+  }
+
+  .dashboard-wrapper {
+    display: block !important;
+    min-height: auto !important;
+  }
+
+  .dashboard-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .card-ll {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .table-ll thead th {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+    border-bottom: 2px solid #333 !important;
+  }
+
+  .print-only-header {
+    display: block !important;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #000;
+    padding-bottom: 1rem;
+  }
+
+  .print-only-footer {
+    display: block !important;
+    margin-top: 2rem;
+    border-top: 1px solid #ccc;
+    padding-top: 0.5rem;
+    font-size: 9pt;
+  }
+}
+
+.print-only-header,
+.print-only-footer {
+  display: none;
+}
+
