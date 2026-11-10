@@ -21,6 +21,7 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 
 const app = express();
 
@@ -65,6 +66,9 @@ app.use((req, res, next) => {
   res.locals.razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
   next();
 });
+
+// Health check endpoint (exempt from CSRF for uptime monitors)
+app.use('/health', healthRoutes);
 
 // CSRF Protection
 app.use(csrfProtection);
