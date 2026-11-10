@@ -145,6 +145,46 @@ class AccountService {
       formattedTotalBalance: formatPaiseToINR(totalBalancePaise)
     };
   }
+
+  /**
+   * Get 30-day cashflow analytics for user accounts
+   */
+  static async getUserAnalytics(userId) {
+    const userAccounts = await Account.find({ userId }).select('_id');
+    const accountIds = userAccounts.map(a => a._id);
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const LedgerEntry = require('../models/LedgerEntry');
+    const entries = await LedgerEntry.find({
+      accountId: { $in: accountIds },
+      timestamp: { $gte: thirtyDaysAgo }
+    }).lean();
+
+    let totalInflowPaise = 0;
+    let totalOutflowPaise = 0;
+    let transferCount = 0;
+
+    for (const e of entries) {
+      if (e.creditAmount > 0) totalInflowPaise += e.creditAmount;
+      if (e.debitAmount > 0) totalOutflowPaise += e.debitAmount;
+      if (e.transactionType && e.transactionType.startsWith('TRANSFER')) transferCount++;
+    }
+
+    const netCashflowPaise = totalInflowPaise - totalOutflowPaise;
+
+    return {
+      totalInflowPaise,
+      totalOutflowPaise,
+      netCashflowPaise,
+      totalInflowFormatted: formatPaiseToINR(totalInflowPaise),
+      totalOutflowFormatted: formatPaiseToINR(totalOutflowPaise),
+      netCashflowFormatted: formatPaiseToINR(netCashflowPaise),
+      monthlyTransactionsCount: entries.length,
+      transferCount
+    };
+  }
 }
 
 module.exports = AccountService;

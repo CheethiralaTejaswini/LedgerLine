@@ -18,10 +18,11 @@ class UserController {
       }
 
       // Default: ACCOUNT_HOLDER Dashboard
-      const [accounts, summary, recentTransactions] = await Promise.all([
+      const [accounts, summary, recentTransactions, analytics] = await Promise.all([
         AccountService.getUserAccounts(user._id),
         AccountService.getUserSummary(user._id),
-        TransactionService.getTransactions({ userId: user._id, limit: 5 })
+        TransactionService.getTransactions({ userId: user._id, limit: 5 }),
+        AccountService.getUserAnalytics(user._id)
       ]);
 
       res.render('accountHolder/dashboard', {
@@ -29,7 +30,8 @@ class UserController {
         user,
         accounts,
         summary,
-        recentTransactions: recentTransactions.transactions
+        recentTransactions: recentTransactions.transactions,
+        analytics
       });
     } catch (error) {
       next(error);
