@@ -74,3 +74,14 @@ $$\sum_{\text{all accounts}} \text{Balance}_{\text{after}} = \sum_{\text{all acc
 
 The system tests this invariant explicitly in `transfer.test.js`, asserting that total system liquidity across all accounts remains identical before and after transfer execution.
 
+### 4. Append-Only Audit Trail & Anti-Repudiation
+Every authentication attempt, high-value transfer, and administrative role elevation is logged to an immutable `AuditLog` collection.
+- Mongoose schema pre-hooks explicitly intercept `updateOne`, `updateMany`, `findOneAndUpdate`, `deleteOne`, and `deleteMany`.
+- Direct attempts to mutate or purge historical audit records throw `AUDIT_IMMUTABILITY_VIOLATION` at the ODM driver level.
+
+### 5. Multi-Tiered Rate Limiting & DoS Mitigation
+- **Authentication:** 20 requests per 15-minute window prevents brute-force password spraying and credential stuffing.
+- **Transactions:** 30 requests per minute protects banking backends from high-speed transaction flooding and wallet depletion scripts.
+- **API Endpoints:** 100 requests per 5-minute window protects account lookup and telemetry routes.
+
+

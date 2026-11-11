@@ -255,3 +255,50 @@ All requests and responses use JSON or standard URL-encoded form submissions. Fi
 - `POST /admin/accounts/:accountId/status`: Update account state (`ACTIVE`/`FROZEN`/`CLOSED`).
 - `GET /admin/transactions`: Global transactions audit log.
 
+---
+
+## 7. System Diagnostics & Health Probes
+
+### System Health Probe
+- **Method:** `GET /health`
+- **Access:** Public (exempt from CSRF for uptime monitors and load balancer health checks)
+- **Response (200 OK / 503 Service Unavailable):**
+  ```json
+  {
+    "service": "LedgerLine Financial Core",
+    "status": "UP",
+    "timestamp": "2026-11-11T16:15:00.000Z",
+    "uptimeSeconds": 14200,
+    "responseTimeMs": 12,
+    "database": {
+      "connected": true,
+      "state": "connected",
+      "replicaSet": {
+        "enabled": true,
+        "setName": "atlas-zscbd5-shard-0",
+        "isMaster": true,
+        "hostsCount": 3
+      }
+    },
+    "system": {
+      "nodeVersion": "v22.17.0",
+      "memory": {
+        "rssMB": 72,
+        "heapUsedMB": 38,
+        "heapTotalMB": 54
+      }
+    }
+  }
+  ```
+
+---
+
+## 8. Append-Only Security Audit Trail
+
+All security, compliance, and authorization events are committed to an immutable append-only collection (`auditlogs`):
+
+- **Severity Levels:** `INFO`, `WARN`, `CRITICAL`
+- **Tracked Actions:** `LOGIN_SUCCESS`, `LOGIN_FAILED`, `LOGOUT`, `USER_REGISTERED`, `ACCOUNT_STATUS_CHANGED`, `HIGH_VALUE_TRANSFER`, `RECONCILIATION_RUN`, `SECURITY_ALERT`
+- **Immutability Contract:** Database-level Mongoose pre-hooks forbid `updateOne`, `deleteOne`, and document edits.
+
+
